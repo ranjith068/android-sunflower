@@ -16,16 +16,21 @@
   -->
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+        <variable
+            name="clickListener"
+            type="android.view.View.OnClickListener"/>
         <variable
             name="viewModel"
             type="com.google.samples.apps.sunflower.viewmodels.PlantAndGardenPlantingsViewModel"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{clickListener}">
 
         <ImageView
             android:id="@+id/imageView"
@@ -51,7 +56,7 @@
             android:layout_marginEnd="@dimen/margin_small"
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_normal"
-            android:text="@{viewModel.plantDate}"
+            android:text="@{@string/planted_date(viewModel.plantName, viewModel.plantDateString)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageView"/>
@@ -64,10 +69,11 @@
             android:layout_marginStart="@dimen/margin_small"
             android:layout_marginTop="@dimen/margin_small"
             android:layout_marginBottom="@dimen/margin_normal"
-            android:text="@{viewModel.waterDate}"
+            android:text="@{@string/water_date(@string/watering_next_prefix(viewModel.waterDateString), @plurals/watering_next_suffix(viewModel.wateringInterval, viewModel.wateringInterval))}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/plant_date"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

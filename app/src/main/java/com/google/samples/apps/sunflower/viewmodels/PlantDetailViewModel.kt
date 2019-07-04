@@ -16,13 +16,16 @@
 
 package com.google.samples.apps.sunflower.viewmodels
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Transformations
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.google.samples.apps.sunflower.PlantDetailFragment
 import com.google.samples.apps.sunflower.data.GardenPlantingRepository
 import com.google.samples.apps.sunflower.data.Plant
 import com.google.samples.apps.sunflower.data.PlantRepository
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * The ViewModel used in [PlantDetailFragment].
@@ -36,6 +39,14 @@ class PlantDetailViewModel(
     val isPlanted: LiveData<Boolean>
     val plant: LiveData<Plant>
 
+    /**
+     * Cancel all coroutines when the ViewModel is cleared.
+     */
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
+
     init {
 
         /* The getGardenPlantingForPlant method returns a LiveData from querying the database. The
@@ -43,12 +54,14 @@ class PlantDetailViewModel(
          * are found. In these cases isPlanted is false. If a record is found then isPlanted is
          * true. */
         val gardenPlantingForPlant = gardenPlantingRepository.getGardenPlantingForPlant(plantId)
-        isPlanted = Transformations.map(gardenPlantingForPlant) { it != null }
+        isPlanted = gardenPlantingForPlant.map { it != null }
 
         plant = plantRepository.getPlant(plantId)
     }
 
     fun addPlantToGarden() {
-        gardenPlantingRepository.createGardenPlanting(plantId)
+        viewModelScope.launch {
+            gardenPlantingRepository.createGardenPlanting(plantId)
+        }
     }
 }
